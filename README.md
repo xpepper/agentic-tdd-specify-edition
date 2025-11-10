@@ -40,16 +40,16 @@ poetry install
 ```bash
 # Run a kata with default settings (Rust, OpenAI GPT-4)
 export OPENAI_API_KEY=your-api-key
-poetry run agentic-tdd run katas/fizzbuzz.md
+python -m agentic_tdd katas/fizzbuzz.md
 
 # Or specify API key directly
-poetry run agentic-tdd run katas/fizzbuzz.md --api-key your-api-key
+python -m agentic_tdd katas/fizzbuzz.md --api-key your-api-key
 ```
 
 ### CLI Reference
 
 ```bash
-poetry run agentic-tdd run KATA_FILE [OPTIONS]
+python -m agentic_tdd KATA_FILE [OPTIONS]
 ```
 
 #### Required Arguments
@@ -83,13 +83,13 @@ poetry run agentic-tdd run KATA_FILE [OPTIONS]
 **Using OpenAI:**
 ```bash
 export OPENAI_API_KEY=sk-...
-poetry run agentic-tdd run katas/fizzbuzz.md --model gpt-4
+python -m agentic_tdd katas/fizzbuzz.md --model gpt-4
 ```
 
 **Using Perplexity:**
 ```bash
 export PERPLEXITY_API_KEY=pplx-...
-poetry run agentic-tdd run katas/fizzbuzz.md \
+python -m agentic_tdd katas/fizzbuzz.md \
   --provider perplexity \
   --model llama-3.1-sonar-large-128k-online
 ```
@@ -97,14 +97,14 @@ poetry run agentic-tdd run katas/fizzbuzz.md \
 **Using DeepSeek:**
 ```bash
 export DEEPSEEK_API_KEY=sk-...
-poetry run agentic-tdd run katas/fizzbuzz.md \
+python -m agentic_tdd katas/fizzbuzz.md \
   --provider deepseek \
   --model deepseek-chat
 ```
 
 **Using Custom OpenAI-Compatible Provider:**
 ```bash
-poetry run agentic-tdd run katas/fizzbuzz.md \
+python -m agentic_tdd katas/fizzbuzz.md \
   --provider custom \
   --base-url https://your-api.example.com/v1 \
   --model your-model-name \
@@ -113,7 +113,7 @@ poetry run agentic-tdd run katas/fizzbuzz.md \
 
 **Advanced Configuration:**
 ```bash
-poetry run agentic-tdd run katas/mars-rover.md \
+python -m agentic_tdd katas/mars-rover.md \
   --work-dir ./my-kata \
   --language rust \
   --provider openai \

@@ -16,26 +16,12 @@ from .llm.provider import create_llm
 from .models.kata import KataDescription
 from .runners import get_runner
 
-app = typer.Typer(
-    name="agentic-tdd",
-    help="Autonomous multi-agent TDD CLI tool for kata solving",
-    add_completion=False,
-    rich_markup_mode=None,  # Disable Rich markup to avoid compatibility issues
-)
 console = Console()
-
-
-@app.callback(invoke_without_command=True)
-def main(ctx: typer.Context) -> None:
-    """Agentic TDD - Autonomous Test-Driven Development."""
-    # If no subcommand is provided, show help
-    if ctx.invoked_subcommand is None:
-        console.print(ctx.get_help())
-        raise typer.Exit()
+app = typer.Typer(add_completion=False)
 
 
 @app.command()
-def run(
+def main(
     kata_file: Annotated[
         Path,
         typer.Argument(
@@ -135,13 +121,13 @@ def run(
         ),
     ] = False,
 ) -> None:
-    """Execute a kata with autonomous TDD.
+    """Autonomous multi-agent TDD CLI tool for kata solving.
 
-    This command runs the complete TDD cycle for a given kata description,
+    This tool runs the complete TDD cycle for a given kata description,
     using AI agents to write tests, implement solutions, and refactor code.
 
     Example:
-        agentic-tdd run fizzbuzz.md --provider openai --model gpt-4
+        agentic-tdd katas/fizzbuzz.md --provider openai --model gpt-4
     """
     # Setup logging
     log_level = logging.DEBUG if verbose else logging.INFO
