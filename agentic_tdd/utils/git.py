@@ -76,9 +76,16 @@ class GitOperations:
             limit: Maximum number of commits to retrieve
 
         Returns:
-            List of commit info objects
+            List of commit info objects (empty list if no commits)
         """
         repo = self.ensure_repo()
+
+        # Check if repository has commits
+        try:
+            _ = repo.head.commit
+        except ValueError:
+            # No commits yet
+            return []
 
         commits: list[GitCommitInfo] = []
         for commit in repo.iter_commits(max_count=limit):
@@ -119,10 +126,23 @@ class GitOperations:
         """
         repo = self.ensure_repo()
 
+        # Check if repository has commits
+        try:
+            _ = repo.head.commit
+            has_commits = True
+        except ValueError:
+            has_commits = False
+
+        if has_commits:
+            staged = [item.a_path for item in repo.index.diff("HEAD") if item.a_path is not None]
+        else:
+            # For new repos with no commits, all staged files are in the index
+            staged = [str(item[0]) for item in repo.index.entries.keys()]
+
         return {
             "modified": [item.a_path for item in repo.index.diff(None) if item.a_path is not None],
-            "staged": [item.a_path for item in repo.index.diff("HEAD") if item.a_path is not None],
-            "untracked": repo.untracked_files,
+            "staged": staged,
+            "untracked": [str(f) for f in repo.untracked_files],
         }
 
     def has_uncommitted_changes(self) -> bool:

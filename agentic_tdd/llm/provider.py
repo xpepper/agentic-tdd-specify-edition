@@ -26,11 +26,10 @@ def create_llm(config: LLMProviderConfig) -> ChatOpenAI:
 
     # Create ChatOpenAI instance with appropriate configuration
     # base_url is already set by the validator in LLMProviderConfig
-    # Type ignore for api_key as LangChain's type hints may differ from runtime
     return ChatOpenAI(
         model=config.model,
         temperature=config.temperature,
-        api_key=config.api_key,  # type: ignore[arg-type]
+        api_key=config.api_key,
         base_url=config.base_url,
         timeout=config.timeout,
     )

@@ -57,6 +57,7 @@ pasted_content.txt
 # Project specific
 /tmp/
 *.md.backup
+kata-work/
 
 # Poetry
 poetry.lock
