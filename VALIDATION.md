@@ -59,19 +59,45 @@ Each agent prompt now includes:
 
 ## Validation Steps
 
-### Option 1: Manual Validation (Recommended)
+### Recommended Testing Configuration
 
-Run a simple kata and manually inspect git history:
+For all validation tests, use the following configuration:
 
 ```bash
-# Run FizzBuzz kata (requires API access)
-python -m agentic_tdd katas/fizzbuzz-kata.md \
-  --provider openai \
-  --model gpt-4o-mini \
+# Provider: iflow (Chinese LLM provider with good availability)
+# Model: qwen3-coder-plus (Alibaba's code-focused model)
+# Environment: IFLOW_API_KEY must be set
+
+export IFLOW_API_KEY=your-key-here
+
+# Standard validation command
+python -m agentic_tdd katas/battleships-kata.md \
+  --provider iflow \
+  --model qwen3-coder-plus \
+  --work-dir ./tmp/kata1 \
+  --max-cycles 5
+```
+
+**Why this configuration?**
+- iFlow provider has reliable availability
+- qwen3-coder-plus is optimized for code generation
+- Consistent setup for reproducible testing
+- Temporary work directory for easy cleanup
+
+### Option 1: Manual Validation (Recommended)
+
+Run a kata and manually inspect git history:
+
+```bash
+# Run Battleships kata
+python -m agentic_tdd katas/battleships-kata.md \
+  --provider iflow \
+  --model qwen3-coder-plus \
+  --work-dir ./tmp/kata1 \
   --max-cycles 5
 
 # Navigate to work directory
-cd kata-work
+cd ./tmp/kata1
 
 # Check git log
 git log --oneline --all
@@ -97,11 +123,18 @@ Example:
 #!/bin/bash
 # validate-test-preservation.sh
 
-WORK_DIR="kata-work"
-KATA_FILE="katas/fizzbuzz-kata.md"
+WORK_DIR="./tmp/kata-validation"
+KATA_FILE="katas/battleships-kata.md"
 
-# Run kata
-python -m agentic_tdd "$KATA_FILE" --max-cycles 5
+# Clean up previous runs
+rm -rf "$WORK_DIR"
+
+# Run kata with iflow provider
+python -m agentic_tdd "$KATA_FILE" \
+  --provider iflow \
+  --model qwen3-coder-plus \
+  --work-dir "$WORK_DIR" \
+  --max-cycles 5
 
 # Check test preservation
 cd "$WORK_DIR"
@@ -131,9 +164,14 @@ Compare pre-fix and post-fix runs:
 cd tmp/battleships-test
 git log --oneline --all > /tmp/pre-fix-commits.txt
 
-# Post-fix run (requires API access)
-python -m agentic_tdd katas/battleships-kata.md --max-cycles 5
-cd kata-work
+# Post-fix run with iflow provider
+python -m agentic_tdd katas/battleships-kata.md \
+  --provider iflow \
+  --model qwen3-coder-plus \
+  --work-dir ./tmp/kata-postfix \
+  --max-cycles 5
+
+cd ./tmp/kata-postfix
 git log --oneline --all > /tmp/post-fix-commits.txt
 
 # Compare test preservation patterns
@@ -196,14 +234,66 @@ The prompt-based fix relies on LLM compliance with instructions. Potential weakn
 
 - ✅ **Bug Identified**: Confirmed via git history analysis
 - ✅ **Fix Implemented**: Prompt enhancements committed (`101bd65`)
-- ⚠️ **Fix Validated**: **PENDING** - Requires successful multi-cycle kata run
-- ⏳ **Blocker**: OpenAI API quota exceeded during validation attempt
+- ⏳ **Fix Validated**: **PENDING** - Awaiting successful post-fix multi-cycle run
+- ⚠️ **Blocker**: iflow/qwen3-coder-plus has output format compliance issues; OpenAI quota exceeded
+
+### Detailed Bug Evidence (Pre-Fix)
+
+Analysis of `./tmp/battleships-test` (run before fix was applied):
+
+```
+Commit 3398591: 2 tests - feat: Implement behavior with passing tests ✅
+Commit ae9644a: 2 tests - refactor: Improve code quality              ✅
+Commit 62804c9: 1 tests - feat: Implement behavior with passing tests ❌ LOST 1 TEST
+Commit b85993f: 1 tests - refactor: Improve code quality              ❌
+Commit 89be922: 1 tests - feat: Implement behavior with passing tests ❌
+Commit 80d38c3: 1 tests - refactor: Improve code quality              ❌
+Commit de66768: 1 tests - feat: Implement behavior with passing tests ❌
+```
+
+**Clear Test Loss Pattern**: 
+- Cycle 1-2: Started with 2 tests
+- Cycle 3+: Dropped to 1 test and never recovered
+- **Result**: 1 test lost permanently after cycle 3
 
 ## Next Steps
 
-1. **Immediate**: User with API access should run validation (Option 1 or 2)
-2. **If validation passes**: Update README.md with fix confirmation
-3. **If validation fails**: Implement Strategy 1 (AST-based merging) as more robust solution
+1. **Immediate**: Run validation with a reliable LLM provider
+   - ✅ Tried: iflow/qwen3-coder-plus (output format issues)
+   - ❌ Tried: OpenAI (quota exceeded)
+   - 📋 TODO: Try Perplexity or DeepSeek with API access
+   
+2. **If validation passes**: 
+   - Update this document with success metrics
+   - Update README.md to remove "pending validation" status
+   - Mark bug as resolved
+   
+3. **If validation fails**: 
+   - Implement Strategy 1 (AST-based merging) as more robust solution
+   - Requires language-specific parsing but provides deterministic behavior
+
+### Validation Attempts Log
+
+**Attempt 1** (2025-11-10):
+- **Provider**: iflow
+- **Model**: qwen3-coder-plus  
+- **Kata**: Battleships
+- **Result**: ❌ Failed - lint errors, model couldn't generate valid code
+- **Issue**: Model created unused structs failing clippy checks
+
+**Attempt 2** (2025-11-10):
+- **Provider**: iflow
+- **Model**: qwen3-coder-plus
+- **Kata**: FizzBuzz  
+- **Result**: ❌ Failed - output format non-compliance
+- **Issue**: Model response missing FILE_PATH marker
+
+**Attempt 3** (2025-11-10):
+- **Provider**: OpenAI
+- **Model**: gpt-4o-mini
+- **Kata**: FizzBuzz
+- **Result**: ❌ Blocked - API quota exceeded
+- **Issue**: Account has insufficient quota
 
 ## Test Cases for Validation
 
