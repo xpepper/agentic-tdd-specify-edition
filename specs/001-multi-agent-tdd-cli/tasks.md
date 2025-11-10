@@ -98,6 +98,7 @@ Single project structure at repository root:
 - [ ] T037 [US2] Add API key validation and error handling in agentic_tdd/config.py (detect missing/invalid credentials)
 - [ ] T038 [US2] Update LLMProviderConfig model validation in agentic_tdd/models/config.py (enforce custom provider requires base_url)
 - [ ] T039 [US2] Add provider configuration display in CLI startup output (show provider, model, base URL being used)
+- [ ] T040 [US2] Add GitHub Copilot provider support in agentic_tdd/llm/provider.py (authentication via GitHub token, model selection for gpt-5)
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work - can switch providers seamlessly
 
@@ -111,13 +112,13 @@ Single project structure at repository root:
 
 ### Implementation for User Story 3
 
-- [ ] T040 [US3] Extend KataDescription parser in agentic_tdd/models/kata.py (parse constraints section from markdown)
-- [ ] T041 [US3] Add constraint extraction to KataDescription.from_markdown (## Constraints heading → list of KataConstraint objects)
-- [ ] T042 [US3] Update AgentContext in agentic_tdd/models/agent.py (include kata_constraints field)
-- [ ] T043 [US3] Update RefactorerAgent system prompt in agentic_tdd/llm/prompts.py (include constraint enforcement instructions)
-- [ ] T044 [US3] Update RefactorerAgent user prompt in agentic_tdd/agents/refactorer.py (_build_user_prompt includes constraints)
-- [ ] T045 [US3] Add constraint validation logic in RefactorerAgent (prioritize fixing violations in refactoring pass)
-- [ ] T046 [US3] Add constraint violation reporting in SupervisorAgent (detect unresolvable constraint conflicts)
+- [ ] T041 [US3] Extend KataDescription parser in agentic_tdd/models/kata.py (parse constraints section from markdown)
+- [ ] T042 [US3] Add constraint extraction to KataDescription.from_markdown (## Constraints heading → list of KataConstraint objects)
+- [ ] T043 [US3] Update AgentContext in agentic_tdd/models/agent.py (include kata_constraints field)
+- [ ] T044 [US3] Update RefactorerAgent system prompt in agentic_tdd/llm/prompts.py (include constraint enforcement instructions)
+- [ ] T045 [US3] Update RefactorerAgent user prompt in agentic_tdd/agents/refactorer.py (_build_user_prompt includes constraints)
+- [ ] T046 [US3] Add constraint validation logic in RefactorerAgent (prioritize fixing violations in refactoring pass)
+- [ ] T047 [US3] Add constraint violation reporting in SupervisorAgent (detect unresolvable constraint conflicts)
 
 **Checkpoint**: All constraints from kata description are enforced during refactoring
 
@@ -131,13 +132,13 @@ Single project structure at repository root:
 
 ### Implementation for User Story 4
 
-- [ ] T047 [P] [US4] Implement PythonRunner in agentic_tdd/runners/python.py (poetry init, pytest, black, ruff, mypy per contracts/language_runner.md)
-- [ ] T048 [P] [US4] Add language detection logic in agentic_tdd/config.py (auto-detect from kata filename or content if not specified)
-- [ ] T049 [US4] Update runner factory in agentic_tdd/runners/__init__.py (register PythonRunner, add supported_languages function)
-- [ ] T050 [US4] Add --language CLI parameter in agentic_tdd/cli.py (enum of supported languages, default to rust)
-- [ ] T051 [US4] Update project initialization in SupervisorAgent (call runner.initialize_project with language-specific setup)
-- [ ] T052 [US4] Add language-specific error messages in runner factory (list supported languages if unsupported requested)
-- [ ] T053 [US4] Update console output in agentic_tdd/cli.py (display selected language in startup banner)
+- [ ] T048 [P] [US4] Implement PythonRunner in agentic_tdd/runners/python.py (poetry init, pytest, black, ruff, mypy per contracts/language_runner.md)
+- [ ] T049 [P] [US4] Add language detection logic in agentic_tdd/config.py (auto-detect from kata filename or content if not specified)
+- [ ] T050 [US4] Update runner factory in agentic_tdd/runners/__init__.py (register PythonRunner, add supported_languages function)
+- [ ] T051 [US4] Add --language CLI parameter in agentic_tdd/cli.py (enum of supported languages, default to rust)
+- [ ] T052 [US4] Update project initialization in SupervisorAgent (call runner.initialize_project with language-specific setup)
+- [ ] T053 [US4] Add language-specific error messages in runner factory (list supported languages if unsupported requested)
+- [ ] T054 [US4] Update console output in agentic_tdd/cli.py (display selected language in startup banner)
 
 **Checkpoint**: All user stories should now be independently functional with multi-language support
 
@@ -147,23 +148,23 @@ Single project structure at repository root:
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T054 [P] Create README.md with project overview, installation, and quickstart reference
-- [ ] T055 [P] Add command timeout configuration in agentic_tdd/models/config.py (ToolConfig.command_timeout field, default 30s)
-- [ ] T056 [P] Add max retries configuration in CLI (--max-retries flag, default 3)
-- [ ] T057 [P] Add verbose logging flag in CLI (--verbose flag, adjust logging level)
-- [ ] T058 Add graceful interruption handling in SupervisorAgent (Ctrl+C → save state, allow resume)
-- [ ] T059 Add resume detection in SupervisorAgent.run_session (detect existing git repo, continue from last cycle)
-- [ ] T060 [P] Add kata description validation in agentic_tdd/models/kata.py (detect malformed markdown, missing sections)
-- [ ] T061 [P] Add working directory validation in agentic_tdd/config.py (handle existing files, git conflicts)
-- [ ] T062 Add LLM timeout and rate limit handling in agentic_tdd/llm/provider.py (retry on timeout, backoff on rate limits)
-- [ ] T063 [P] Create FizzBuzz example kata in examples/katas/fizzbuzz.md
-- [ ] T064 [P] Create Roman Numerals example kata in examples/katas/roman-numerals.md
-- [ ] T065 [P] Add unit tests for models in tests/unit/test_models.py (Pydantic validation coverage)
-- [ ] T066 [P] Add unit tests for utilities in tests/unit/test_utils.py (shell, git, logging)
-- [ ] T067 [P] Add integration test for full kata execution in tests/integration/test_fizzbuzz_e2e.py
-- [ ] T068 Validate quickstart.md instructions (manual walkthrough of installation and first kata)
-- [ ] T069 Add error handling documentation in docs/errors.md (common errors and solutions)
-- [ ] T070 Add extending guide in docs/extending.md (how to add new language runners)
+- [ ] T055 [P] Create README.md with project overview, installation, and quickstart reference
+- [ ] T056 [P] Add command timeout configuration in agentic_tdd/models/config.py (ToolConfig.command_timeout field, default 30s)
+- [ ] T057 [P] Add max retries configuration in CLI (--max-retries flag, default 3)
+- [ ] T058 [P] Add verbose logging flag in CLI (--verbose flag, adjust logging level)
+- [ ] T059 Add graceful interruption handling in SupervisorAgent (Ctrl+C → save state, allow resume)
+- [ ] T060 Add resume detection in SupervisorAgent.run_session (detect existing git repo, continue from last cycle)
+- [ ] T061 [P] Add kata description validation in agentic_tdd/models/kata.py (detect malformed markdown, missing sections)
+- [ ] T062 [P] Add working directory validation in agentic_tdd/config.py (handle existing files, git conflicts)
+- [ ] T063 Add LLM timeout and rate limit handling in agentic_tdd/llm/provider.py (retry on timeout, backoff on rate limits)
+- [ ] T064 [P] Create FizzBuzz example kata in examples/katas/fizzbuzz.md
+- [ ] T065 [P] Create Roman Numerals example kata in examples/katas/roman-numerals.md
+- [ ] T066 [P] Add unit tests for models in tests/unit/test_models.py (Pydantic validation coverage)
+- [ ] T067 [P] Add unit tests for utilities in tests/unit/test_utils.py (shell, git, logging)
+- [ ] T068 [P] Add integration test for full kata execution in tests/integration/test_fizzbuzz_e2e.py
+- [ ] T069 Validate quickstart.md instructions (manual walkthrough of installation and first kata)
+- [ ] T070 Add error handling documentation in docs/errors.md (common errors and solutions)
+- [ ] T071 Add extending guide in docs/extending.md (how to add new language runners)
 
 ---
 
@@ -197,8 +198,8 @@ Single project structure at repository root:
 
 - **Phase 1 Setup**: T003, T004, T005 can run in parallel
 - **Phase 2 Foundational**: T008-T010, T012-T013, T017 can run in parallel after T006-T007
-- **Phase 6 User Story 4**: T047 (PythonRunner) can run in parallel with T048-T049
-- **Phase 7 Polish**: T054-T057, T060-T061, T063-T064, T065-T066 can run in parallel
+- **Phase 6 User Story 4**: T048 (PythonRunner) can run in parallel with T049-T050
+- **Phase 7 Polish**: T055-T058, T061-T062, T064-T065, T066-T067 can run in parallel
 - **Entire User Stories**: US1, US2, US3, US4 can be worked on in parallel by different team members after Phase 2
 
 ---
@@ -221,12 +222,12 @@ Task: "T017 Create agent system prompts in agentic_tdd/llm/prompts.py"
 
 ```bash
 # Language runners can be developed in parallel:
-Task: "T047 Implement PythonRunner in agentic_tdd/runners/python.py"
+Task: "T048 Implement PythonRunner in agentic_tdd/runners/python.py"
 # (RustRunner already exists from US1)
 
 # Factory and detection logic:
-Task: "T048 Add language detection logic in agentic_tdd/config.py"
-Task: "T049 Update runner factory in agentic_tdd/runners/__init__.py"
+Task: "T049 Add language detection logic in agentic_tdd/config.py"
+Task: "T050 Update runner factory in agentic_tdd/runners/__init__.py"
 ```
 
 ---
@@ -270,12 +271,12 @@ Stories complete and integrate independently.
 - **Phase 1 (Setup)**: 5 tasks
 - **Phase 2 (Foundational)**: 12 tasks (BLOCKS all user stories)
 - **Phase 3 (US1 - MVP)**: 15 tasks
-- **Phase 4 (US2)**: 7 tasks
+- **Phase 4 (US2)**: 8 tasks (includes GitHub Copilot support)
 - **Phase 5 (US3)**: 7 tasks
 - **Phase 6 (US4)**: 7 tasks
 - **Phase 7 (Polish)**: 17 tasks
 
-**Total**: 70 tasks
+**Total**: 71 tasks
 
 **MVP Scope** (Recommended): Phase 1 + Phase 2 + Phase 3 = 32 tasks
 
