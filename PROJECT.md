@@ -55,3 +55,90 @@ For any of the agents we'll be using LLM providers via LangChain. It should be p
 ## Nice to have, to be added to the future plan
 - Integration with GitHub Copilot to select its models (e.g. Copilot GPT-5)
 
+## Current Implementation Status
+
+### ✅ Completed (MVP Feature-Complete)
+
+1. **Multi-Agent Architecture**
+   - ✅ Tester Agent (writes failing tests)
+   - ✅ Implementer Agent (makes tests pass)
+   - ✅ Refactorer Agent (improves code quality)
+   - ✅ Supervisor Agent (orchestrates workflow)
+
+2. **CLI Infrastructure**
+   - ✅ Full argument parsing with Typer
+   - ✅ Support for multiple LLM providers (OpenAI, Perplexity, DeepSeek, iFlow, custom)
+   - ✅ Environment variable support for API keys
+   - ✅ Configurable max-cycles, retries, timeouts
+   - ✅ Rich console output with progress indicators
+
+3. **Language Support**
+   - ✅ Rust runner with cargo integration
+   - ✅ Pluggable runner architecture for future languages
+
+4. **Git Integration**
+   - ✅ Automatic git repository initialization
+   - ✅ Agent communication via commits
+   - ✅ Clean commit history showing TDD progression
+
+5. **Quality Gates**
+   - ✅ Automated formatting (`cargo fmt`)
+   - ✅ Linting (`cargo clippy`)
+   - ✅ Test execution before commits
+   - ✅ Retry logic for transient failures
+
+### 🔧 Known Issues & Fixes
+
+1. **Test Preservation Bug** (Fix Applied, Pending Validation)
+   - **Issue**: Agents were replacing entire files, causing test loss across cycles
+   - **Root Cause**: `file.write_text()` overwrites + insufficient LLM instructions
+   - **Fix**: Enhanced prompts with CRITICAL preservation instructions (commit `101bd65`)
+   - **Status**: ⏳ Awaiting validation with live kata run
+   - **Documentation**: See `VALIDATION.md` for full details and validation guide
+   - **Alternative Solutions**: AST-based merging, diff-based editing, append-only mode
+
+### 🚧 In Progress
+
+1. **Real-World Testing**
+   - Testing with various katas (FizzBuzz, Battleships, Mars Rover)
+   - Validation of test preservation fix
+   - LLM behavior assessment across different providers
+
+### 📋 Not Yet Started
+
+1. **Additional Language Support**
+   - Python runner
+   - JavaScript/TypeScript runner
+   - Other languages as needed
+
+2. **Enhanced Supervisor Intelligence**
+   - Detecting when to suggest simpler tests
+   - Preemptive refactoring recommendations
+   - Better stall detection and recovery
+
+3. **Documentation**
+   - Comprehensive developer documentation
+   - Architecture diagrams
+   - Contributing guidelines
+
+4. **Testing**
+   - Unit tests for agents
+   - Integration tests for workflows
+   - Mock LLM for deterministic testing
+
+## Next Immediate Steps
+
+1. **Validate test preservation fix** (requires API access)
+   - Run multi-cycle kata with working API key
+   - Verify tests accumulate without loss
+   - Document results in `VALIDATION.md`
+
+2. **Based on validation results**:
+   - If fix works: Mark as resolved, continue testing phase
+   - If fix fails: Implement AST-based merging strategy
+
+3. **Continue real-world testing**
+   - Test with various kata complexities
+   - Document LLM behavior patterns
+   - Tune prompts and retry logic as needed
+

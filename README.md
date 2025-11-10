@@ -172,16 +172,24 @@ make clean
 
 ## Project Status
 
-**Current Status**: ✅ CLI Infrastructure Complete
+**Current Status**: ✅ CLI Infrastructure Complete | 🔧 Bug Fix Pending Validation
 
 - ✅ Multi-agent architecture implemented
 - ✅ Rust language runner with cargo integration
 - ✅ CLI with full argument parsing
 - ✅ Git-based communication between agents
 - ✅ Quality gates (format, lint, test)
+- 🔧 Test preservation fix applied (pending validation)
 - 🚧 Testing phase with real-world katas (in progress)
 
 See `/specs/001-multi-agent-tdd-cli/plan.md` for detailed progress.
+
+### Known Issues
+
+⚠️ **Test Preservation Bug** (Fix Applied, Validation Pending)
+- **Issue**: Agents were dropping existing tests/code during TDD cycles
+- **Status**: Fix committed (`101bd65`), awaiting validation with live kata run
+- **Details**: See `VALIDATION.md` for evidence, fix details, and validation instructions
 
 ## Documentation
 
