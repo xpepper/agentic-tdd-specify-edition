@@ -42,6 +42,8 @@ env/
 .coverage
 htmlcov/
 .tox/
+.mypy_cache/
+.ruff_cache/
 
 # Environment variables
 .env
@@ -55,3 +57,6 @@ pasted_content.txt
 # Project specific
 /tmp/
 *.md.backup
+
+# Poetry
+poetry.lock
