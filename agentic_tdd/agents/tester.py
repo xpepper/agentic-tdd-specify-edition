@@ -180,11 +180,15 @@ class TesterAgent(Agent):
                 "Write ONE small, focused test for the next untested behavior.",
                 "The test should be minimal and fail when run (RED state).",
                 "",
-                "Respond with:",
+                "**CRITICAL**: You MUST include ALL existing tests and code in your response.",
+                "Do NOT remove or replace any existing tests or functions.",
+                "Only ADD the new test to the existing file content.",
+                "",
+                "Respond with the COMPLETE file content including:",
                 "FILE_PATH: path/to/test_file.ext",
                 "TEST_CODE:",
                 "```",
-                "... your test code here ...",
+                "... COMPLETE file with all existing tests/code + your new test ...",
                 "```",
             ]
         )
