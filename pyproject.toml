@@ -1,0 +1,65 @@
+[tool.poetry]
+name = "agentic-tdd"
+version = "0.1.0"
+description = "Autonomous multi-agent TDD CLI tool for kata solving"
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+packages = [{include = "agentic_tdd"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+langchain = "^0.2.0"
+langchain-openai = "^0.1.0"
+typer = {extras = ["all"], version = "^0.12.0"}
+gitpython = "^3.1.0"
+rich = "^13.7.0"
+pydantic = "^2.7.0"
+pydantic-settings = "^2.2.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.2.0"
+pytest-cov = "^5.0.0"
+black = "^24.4.0"
+ruff = "^0.4.0"
+mypy = "^1.10.0"
+
+[tool.poetry.scripts]
+agentic-tdd = "agentic_tdd.__main__:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "N",  # pep8-naming
+    "UP", # pyupgrade
+]
+ignore = []
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --cov=agentic_tdd --cov-report=term-missing"
