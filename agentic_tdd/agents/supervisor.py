@@ -99,14 +99,44 @@ class SupervisorAgent:
         cycle_state = self.session_state.get_current_cycle_state()
 
         try:
-            # Phase 1: Tester - Write failing test
+            # Phase 1: Tester - Write failing test (with overshoot retry logic)
             cycle_state.phase = TDDPhase.TESTING
             logger.info("Phase 1: Tester - Writing failing test...")
-            tester_result = self._execute_tester(cycle_state)
 
-            if tester_result.overshoot_detected:
-                logger.warning("Overshoot detected!")
-                return self._handle_tester_overshoot(cycle_state, tester_result)
+            tester_result: AgentResult | None = None
+            overshoot_attempts = 0
+            max_overshoot_retries = 3  # Allow 3 attempts to write a proper failing test
+
+            while overshoot_attempts <= max_overshoot_retries:
+                tester_result = self._execute_tester(cycle_state, overshoot_attempts)
+
+                if tester_result.overshoot_detected:
+                    overshoot_attempts += 1
+                    logger.warning(
+                        f"Overshoot detected! (Attempt {overshoot_attempts}/{max_overshoot_retries + 1})"
+                    )
+
+                    if overshoot_attempts > max_overshoot_retries:
+                        logger.info(
+                            "Max overshoot retries reached. "
+                            "Implementation may be complete or test is too simple."
+                        )
+                        # Don't fail the entire kata - just complete this cycle
+                        cycle_state.mark_complete()
+                        logger.info(
+                            f"✓ Cycle {cycle_state.cycle_num} completed "
+                            "(implementation already covers behavior)"
+                        )
+                        return cycle_state
+
+                    logger.info("Retrying with different test approach...")
+                    continue
+
+                # No overshoot - proceed normally
+                break
+
+            # tester_result must be set after the loop
+            assert tester_result is not None
 
             if not tester_result.success:
                 error_msg = f"Tester failed: {tester_result.message}"
@@ -190,16 +220,29 @@ class SupervisorAgent:
 
         logger.info("Session initialized successfully")
 
-    def _execute_tester(self, cycle_state: CycleState) -> AgentResult:
+    def _execute_tester(self, cycle_state: CycleState, overshoot_attempt: int = 0) -> AgentResult:
         """Execute tester agent.
 
         Args:
             cycle_state: Current cycle state
+            overshoot_attempt: Number of overshoot retry attempts (0 = first attempt)
 
         Returns:
             AgentResult from tester execution
         """
-        context = self._build_context(cycle_state)
+        # Build context with overshoot information if retrying
+        last_error = None
+        if overshoot_attempt > 0:
+            last_error = (
+                f"Previous test passed immediately (overshoot). "
+                f"Please write a test that fails initially and requires new implementation. "
+                f"This is overshoot retry attempt {overshoot_attempt}. "
+                f"Consider testing a different aspect or edge case of the kata requirements."
+            )
+
+        context = self._build_context(
+            cycle_state, retry_attempt=overshoot_attempt, last_error=last_error
+        )
         return self.tester.execute(context)
 
     def _execute_with_retry(
@@ -308,25 +351,6 @@ class SupervisorAgent:
 
         parts = file_path.relative_to(self.config.work_dir).parts
         return any(pattern in parts for pattern in ignore_patterns)
-
-    def _handle_tester_overshoot(self, cycle_state: CycleState, result: AgentResult) -> CycleState:
-        """Handle test passing immediately (overshoot).
-
-        Args:
-            cycle_state: Current cycle state
-            result: Tester result with overshoot
-
-        Returns:
-            Updated cycle state
-        """
-        logger.warning("Test passed immediately - overshoot detected")
-        logger.info("This suggests the implementation already covers this behavior")
-
-        # Mark as failed - supervisor should request different test or consider kata complete
-        error_msg = f"Overshoot: {result.message}"
-        cycle_state.mark_failed(error_msg)
-
-        return cycle_state
 
     def _handle_implementer_failure(
         self, cycle_state: CycleState, result: AgentResult

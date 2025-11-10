@@ -103,7 +103,7 @@ def main(
             help="Maximum retry attempts per agent",
             min=1,
         ),
-    ] = 3,
+    ] = 5,
     command_timeout: Annotated[
         int,
         typer.Option(
